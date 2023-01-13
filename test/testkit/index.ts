@@ -1,5 +1,2 @@
-// @ts-ignore: allow us to run web based tests in node (self is used by Webpack in those cases )
-global.self = global
-
-export { runPlugin } from './runPlugin'
+export { compile } from './compile'
 export { createWebpackConfig } from './createWebpackConfig'

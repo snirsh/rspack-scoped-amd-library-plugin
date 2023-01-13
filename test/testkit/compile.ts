@@ -3,7 +3,7 @@ import AmdLoaderFactory from './amdLoaderFactory'
 import type { LoadFile, LoadFileSync } from '../../src/types'
 import { loadFileFactory } from './fileLoaderFactory'
 import { skipCompilation, useInMemoryFileSystem } from './constants'
-import { compileWithWebpack } from './compileWithWebpack'
+import { runWebpack } from './runWebpack'
 import { FilesContent } from './types'
 import { prepareFileSystem } from './prepareFileSystem'
 import type { Configuration } from 'webpack'
@@ -21,7 +21,7 @@ type RunPluginResult = {
 	loadFileSync: LoadFileSync
 }
 
-export const runPlugin = async (files: FilesContent, webpackConfig: Configuration): Promise<RunPluginResult> => {
+export const compile = async (files: FilesContent, webpackConfig: Configuration): Promise<RunPluginResult> => {
 	if (!('index.js' in files)) {
 		throw new Error('"index.js" file must be provided')
 	}
@@ -33,7 +33,7 @@ export const runPlugin = async (files: FilesContent, webpackConfig: Configuratio
 
 	if (useInMemoryFileSystem || !skipCompilation) {
 		console.log('Compiling source code')
-		await compileWithWebpack(webpackConfig, fs)
+		await runWebpack(webpackConfig, fs)
 	} else {
 		console.log('skipping compilation')
 	}

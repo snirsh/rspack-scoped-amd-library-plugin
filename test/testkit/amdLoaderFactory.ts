@@ -54,7 +54,6 @@ const AmdLoaderFactory = (loadFile: LoadFile) => {
 					factory: Function | undefined
 				) => {
 					const isNamedDefine = typeof nameOrDependenciesIds === 'string'
-					// const moduleName = isNamedDefine ? args[0] : null
 					const moduleDependenciesIds = ((isNamedDefine ? dependenciesIdsOrFactory : nameOrDependenciesIds) ||
 						[]) as Array<string>
 					const amdModuleFactory = (isNamedDefine ? factory : dependenciesIdsOrFactory) as ModuleFactory
@@ -77,16 +76,11 @@ const AmdLoaderFactory = (loadFile: LoadFile) => {
 			const fetchModule = async (moduleUrl: string) => {
 				const code = await loadFile(moduleUrl)
 				defineAmdGlobals()
-				// eslint-disable-next-line no-eval
 				eval(code)
 				cleanupAmdGlobals()
 			}
 
-			try {
-				await fetchModule(url)
-			} catch {
-				await fetchModule(url) // retry
-			}
+			await fetchModule(url)
 
 			scriptsCache[url] = moduleFactory
 

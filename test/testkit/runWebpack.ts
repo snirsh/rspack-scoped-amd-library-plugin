@@ -2,7 +2,7 @@ import webpack from 'webpack'
 import type { Configuration } from 'webpack'
 import { FS } from './types'
 
-export const compileWithWebpack = (webpackConfig: Configuration, fs: FS) =>
+export const runWebpack = (webpackConfig: Configuration, fs: FS) =>
 	new Promise<void>((resolve, reject) => {
 		const compiler = webpack(webpackConfig)
 		compiler.inputFileSystem = fs

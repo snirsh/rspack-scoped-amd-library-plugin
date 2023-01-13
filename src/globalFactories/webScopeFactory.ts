@@ -36,7 +36,6 @@ export const webScopeFactory = (projectRoot: string, loadFile: LoadFile | LoadFi
 				onload?.()
 			})
 			.catch((err: unknown) => {
-				console.error('failed loading script', src, err)
 				onerror?.(err)
 			})
 	}
