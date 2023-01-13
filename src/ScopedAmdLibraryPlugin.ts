@@ -1,17 +1,3 @@
-/*
-	This is a fork of Webpack's AmdLibraryPlugin found at
-	https://github.com/webpack/webpack/blob/main/lib/library/AmdLibraryPlugin.js
-
-	The intent is to safely and reliably shadow global scope arguments from Webpack's own runtime and use user provided external
-	scope dependency instead.
-
-	Usage:
-	1. Set "library.type" configuration to "scoped-amd"
-	2. Add plugin to plugins list and pass the scope dependency name which will be provided by your amd loader
-		new ScopedAmdLibraryPlugin({ scopeDependencyName: 'myScope' })
-	3. Set the "externalsType" configuration to "amd"
-*/
-
 import { ConcatSource } from 'webpack-sources'
 import ExternalModule from 'webpack/lib/ExternalModule'
 import Template from 'webpack/lib/Template'

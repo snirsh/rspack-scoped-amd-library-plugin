@@ -1,5 +1,10 @@
 # Scoped AMD Library Webpack Plugin
 
+This is a fork of Webpack's [AmdLibraryPlugin](https://github.com/webpack/webpack/blob/main/lib/library/AmdLibraryPlugin.js)
+
+The intent is to safely and reliably shadow global scope arguments from Webpack's own runtime and use user provided external
+scope dependency instead.
+
 # Usage
 
 1. Set `library.type` configuration to `scoped-amd`.
