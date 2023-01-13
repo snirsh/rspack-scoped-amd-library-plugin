@@ -26,7 +26,7 @@ export const createWebpackConfig = ({
 		},
 		target: [target, 'es5'],
 		output: {
-			filename: '[name].js',
+			filename: '[name].bundle.js',
 			chunkFilename: '[name].chunk.js',
 			path: `${filePrefix}/dist`,
 			clean: true,

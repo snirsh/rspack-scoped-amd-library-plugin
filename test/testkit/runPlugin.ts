@@ -3,10 +3,10 @@ import AmdLoaderFactory from './amdLoaderFactory'
 import type { LoadFile, LoadFileSync } from '../../src/types'
 import { loadFileFactory } from './fileLoaderFactory'
 import { skipCompilation, useInMemoryFileSystem } from './constants'
-import { createWebpackConfig } from './createWebpackConfig'
 import { compileWithWebpack } from './compileWithWebpack'
 import { FilesContent } from './types'
 import { prepareFileSystem } from './prepareFileSystem'
+import type { Configuration } from 'webpack'
 
 type ModuleInfo = {
 	load: (dependencies?: any) => Promise<any>
@@ -21,10 +21,7 @@ type RunPluginResult = {
 	loadFileSync: LoadFileSync
 }
 
-export const runPlugin = async (
-	files: FilesContent,
-	webpackConfig = createWebpackConfig()
-): Promise<RunPluginResult> => {
+export const runPlugin = async (files: FilesContent, webpackConfig: Configuration): Promise<RunPluginResult> => {
 	if (!('index.js' in files)) {
 		throw new Error('"index.js" file must be provided')
 	}

@@ -4,13 +4,16 @@ import path from 'path'
 /**
  * Generates the minimal required object for proper node targeted amd scripts built in webpack
  *
+ * @param projectRoot a path representing the base route for any relative url in your bundles
  * @param loadFileSync a function that returns file/url content
- * @param currentFileRoute a path representing the current script's url to use as a base route to any upcoming path resolutions
  */
-export const nodeScopeFactory = (loadFileSync: LoadFileSync, currentFileRoute: string) => {
-	const baseRoute = /(.+)\/.+?$/i.exec(currentFileRoute)![1]
+export const nodeScopeFactory = (projectRoot: string, loadFileSync: LoadFileSync) => {
+	if (!/^https?:/i.test(projectRoot) && !projectRoot.endsWith('/')) {
+		throw new Error('non-url projectRoot argument must end with a "/"')
+	}
+
 	const requireFn = (src: string) => {
-		const modulePath = path.join(baseRoute, src)
+		const modulePath = path.join(projectRoot, src)
 		const moduleDir = path.dirname(modulePath)
 		const moduleCode = loadFileSync(modulePath)
 

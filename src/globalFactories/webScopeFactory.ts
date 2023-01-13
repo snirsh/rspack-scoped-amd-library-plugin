@@ -1,4 +1,4 @@
-import type { LoadFile } from '../types'
+import type { LoadFile, LoadFileSync } from '../types'
 
 type DOMElement = {
 	type: string
@@ -17,14 +17,19 @@ type DOMScript = DOMElement & {
 /**
  * Generates the minimal required object for proper web targeted amd scripts built in webpack
  *
+ * @param projectRoot a path representing the base route for any relative url in your bundles
  * @param loadFile a function that returns file/url content
- * @param src a path representing the current script's url as per https://developer.mozilla.org/en-US/docs/Web/API/Document/currentScript
  */
-export const webScopeFactory = (loadFile: LoadFile, src: string) => {
+export const webScopeFactory = (projectRoot: string, loadFile: LoadFile | LoadFileSync) => {
+	if (!/^https?:/i.test(projectRoot) && !projectRoot.endsWith('/')) {
+		throw new Error('non-url projectRoot argument must end with a "/"')
+	}
+
 	const elements: Array<DOMElement> = []
+	const promisifiedLoadFile: LoadFile = (...args) => Promise.resolve(loadFile(...args))
 
 	const loadScriptFromScriptTag = ({ src, onerror, onload }: DOMScript) => {
-		loadFile(src!)
+		promisifiedLoadFile(src!)
 			.then((payload: string) => {
 				// eslint-disable-next-line no-eval
 				eval(payload)
@@ -70,7 +75,7 @@ export const webScopeFactory = (loadFile: LoadFile, src: string) => {
 		},
 	}
 
-	;(document.createElement('script') as DOMScript).src = src
+	;(document.createElement('script') as DOMScript).src = projectRoot
 
 	return {
 		document,
