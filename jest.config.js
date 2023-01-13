@@ -4,4 +4,9 @@ module.exports = {
 	testEnvironment: 'node',
 	bail: true,
 	testTimeout: 240 * 1000,
+	globals: {
+		'ts-jest': {
+			isolatedModules: true,
+		},
+	},
 }

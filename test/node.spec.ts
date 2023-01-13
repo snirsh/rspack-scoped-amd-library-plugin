@@ -1,40 +1,21 @@
 import { compile, createWebpackConfig } from './testkit'
-import { webScopeFactory } from '../src/globalFactories/webScopeFactory'
-// import { nodeScopeFactory } from '../src/globalFactories/nodeScopeFactory'
-// import { webworkerScopeFactory } from '../src/globalFactories/webworkerScopeFactory'
+import { nodeScopeFactory } from '../src/globalFactories/nodeScopeFactory'
 import { ProvidePlugin } from 'webpack'
 import ScopedAmdLibraryPlugin from '../src/ScopedAmdLibraryPlugin'
 
-declare global {
-	// eslint-disable-next-line no-var
-	var document: any
-}
+const originalRequireFn = require
 
-describe('web', () => {
+describe('node', () => {
 	beforeEach(() => {
-		// establish web like globals in test environment
 		// @ts-ignore: referenced by webpack runtime
-		global.self = global
-		// @ts-ignore: referenced by webpack runtime
-		global.window = global
-		// @ts-ignore: referenced by webpack runtime
-		global.document = {
-			createElement: jest.fn(),
-			getElementsByTagName: jest.fn(),
-		}
+		global.require = jest.fn(originalRequireFn)
 		// @ts-ignore: used in application code in our test
 		global.atob = jest.fn((x) => `host: ${x}`)
 	})
 
 	afterEach(() => {
-		// @ts-ignore: remove the one webpack global we cant yet shadow in web environment
-		delete global.webpackChunkproject_name
 		// @ts-ignore: cleanup
-		delete global.self
-		// @ts-ignore: cleanup
-		delete global.window
-		// @ts-ignore: cleanup
-		delete global.document
+		global.require = originalRequireFn
 		// @ts-ignore: cleanup
 		delete global.atob
 		jest.clearAllMocks()
@@ -54,7 +35,7 @@ describe('web', () => {
 
 		const scopeDependencyName = 'myScope'
 		const config = createWebpackConfig({
-			target: 'web',
+			target: 'node',
 			plugins: [new ScopedAmdLibraryPlugin({ scopeDependencyName })],
 			externals: [
 				{
@@ -63,11 +44,11 @@ describe('web', () => {
 			],
 		})
 
-		const { modules, loadFile } = await compile(files, config)
+		const { modules, loadFileSync } = await compile(files, config)
 
 		expect(Object.keys(modules).sort()).toEqual(['chunky.chunk.js', 'index.bundle.js'])
 
-		const scope = webScopeFactory(config.output!.path! + '/', loadFile)
+		const scope = nodeScopeFactory(config.output!.path! + '/', loadFileSync)
 
 		// load module
 		const moduleExports = await modules['index.bundle.js'].load({ [scopeDependencyName]: scope })
@@ -92,7 +73,7 @@ describe('web', () => {
 
 		const scopeDependencyName = 'myScope'
 		const config = createWebpackConfig({
-			target: 'web',
+			target: 'node',
 			plugins: [new ScopedAmdLibraryPlugin({ scopeDependencyName })],
 			externals: [
 				{
@@ -101,13 +82,13 @@ describe('web', () => {
 			],
 		})
 
-		const { modules, loadFile } = await compile(files, config)
+		const { modules, loadFileSync } = await compile(files, config)
 
-		const scope = webScopeFactory(config.output!.path! + '/', loadFile)
-		scope.document.getElementsByTagName = jest.fn(scope.document.getElementsByTagName)
+		const scope = nodeScopeFactory(config.output!.path! + '/', loadFileSync)
+		scope.require = jest.fn(scope.require)
 
-		expect(global.document.getElementsByTagName).not.toHaveBeenCalled()
-		expect(scope.document.getElementsByTagName).not.toHaveBeenCalled()
+		expect(global.require).not.toHaveBeenCalled()
+		expect(scope.require).not.toHaveBeenCalled()
 
 		// load module
 		const moduleExports = await modules['index.bundle.js'].load({ [scopeDependencyName]: scope })
@@ -118,8 +99,8 @@ describe('web', () => {
 		// check that module chunk is loaded
 		expect(await moduleExports.chunkyPromise).toMatchObject({ msg: 'msg from chunk' })
 
-		expect(global.document.getElementsByTagName).not.toHaveBeenCalled()
-		expect(scope.document.getElementsByTagName).toHaveBeenCalled()
+		expect(global.require).not.toHaveBeenCalled()
+		expect(scope.require).toHaveBeenCalled()
 	})
 
 	test('Replace application code global scope access with the provided scope', async () => {
@@ -137,7 +118,7 @@ describe('web', () => {
 
 		const scopeDependencyName = 'myScope'
 		const config = createWebpackConfig({
-			target: 'web',
+			target: 'node',
 			plugins: [
 				new ProvidePlugin({
 					atob: [scopeDependencyName, 'atob'],
@@ -151,9 +132,9 @@ describe('web', () => {
 			],
 		})
 
-		const { modules, loadFile } = await compile(files, config)
+		const { modules, loadFileSync } = await compile(files, config)
 
-		const scope = webScopeFactory(config.output!.path! + '/', loadFile) as any
+		const scope = nodeScopeFactory(config.output!.path! + '/', loadFileSync) as any
 		scope.atob = jest.fn((x) => `scope: ${x}`)
 
 		expect(global.atob).not.toHaveBeenCalled()
