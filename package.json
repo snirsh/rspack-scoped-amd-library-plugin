@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "prepare": "husky install",
     "build": "webpack",
     "start": "node amdLoader.js",
     "test": "jest",
