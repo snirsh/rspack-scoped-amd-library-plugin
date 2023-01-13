@@ -1,7 +1,5 @@
 import { compile, createWebpackConfig } from './testkit'
 import { webScopeFactory } from '../src/globalFactories/webScopeFactory'
-// import { nodeScopeFactory } from '../src/globalFactories/nodeScopeFactory'
-// import { webworkerScopeFactory } from '../src/globalFactories/webworkerScopeFactory'
 import { ProvidePlugin } from 'webpack'
 import ScopedAmdLibraryPlugin from '../src/ScopedAmdLibraryPlugin'
 
