@@ -15,7 +15,7 @@ export const nodeScopeFactory = (loadFileSync: LoadFileSync, currentFileRoute: s
 		const moduleCode = loadFileSync(modulePath)
 
 		const packagedModule = eval(
-			['(exports, require, module, __filename, __dirname) => {', moduleCode, '};'].join('\n')
+			['(function runModule(exports, require, module, __filename, __dirname) {', moduleCode, '});'].join('\n')
 		)
 		const module = {
 			exports: {},
