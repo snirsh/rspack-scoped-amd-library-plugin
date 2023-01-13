@@ -1,3 +1,3 @@
 export const filePrefix = process.env.FILE_PREFIX || `${__dirname}/.dump`
-export const skipCompilation = !!process.env.COMPILE
-export const useInMemoryFileSystem = !!process.env.MEMORY_FS
+export const skipCompilation = process.env.DONT_COMPILE === 'true'
+export const useInMemoryFileSystem = process.env.MEMORY_FS === 'undefined' || process.env.MEMORY_FS === 'true'

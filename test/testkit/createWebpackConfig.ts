@@ -45,7 +45,7 @@ export const createWebpackConfig = ({
 		plugins: [
 			new ProvidePlugin({
 				window: scopeDependencyName,
-				document: [scopeDependencyName, 'document']
+				document: [scopeDependencyName, 'document'],
 			}),
 			new ScopedAmdLibraryPlugin({ scopeDependencyName }),
 		],

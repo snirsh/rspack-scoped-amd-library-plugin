@@ -22,21 +22,24 @@ const ScopedAmdLibraryPlugin = require('scoped-amd-library-plugin')
 const scopeDependencyName = 'myScope'
 
 module.exports = {
-    output: {
-        library: {
-            type: 'scoped-amd', // step 1
-        },
-    },
-    externalsType: 'amd', // step 2
-    plugins: [
-        new ScopedAmdLibraryPlugin({ scopeDependencyName }), // step 3
-        new ProvidePlugin({ // step 4     
-            window: scopeDependencyName,
-            document: [scopeDependencyName, 'document']
-        }),
-    ],
-    externals: [{
-        [scopeDependencyName]: scopeDependencyName, // optional step 5
-    }],
+	output: {
+		library: {
+			type: 'scoped-amd', // step 1
+		},
+	},
+	externalsType: 'amd', // step 2
+	plugins: [
+		new ScopedAmdLibraryPlugin({ scopeDependencyName }), // step 3
+		new ProvidePlugin({
+			// step 4
+			window: scopeDependencyName,
+			document: [scopeDependencyName, 'document'],
+		}),
+	],
+	externals: [
+		{
+			[scopeDependencyName]: scopeDependencyName, // optional step 5
+		},
+	],
 }
 ```

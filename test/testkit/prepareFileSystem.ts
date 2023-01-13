@@ -4,6 +4,7 @@ import MemoryFS from 'memory-fs'
 import nodeFS from 'fs'
 
 export const prepareFileSystem = (files: FilesContent): FS => {
+	console.log('preparing', useInMemoryFileSystem ? 'in-memory' : 'physical', 'file system')
 	const fs = useInMemoryFileSystem ? new MemoryFS() : nodeFS
 
 	// Stage source files for webpack

@@ -35,7 +35,10 @@ export const runPlugin = async (
 	const amdLoader = AmdLoaderFactory(loadFile)
 
 	if (useInMemoryFileSystem || !skipCompilation) {
+		console.log('Compiling source code')
 		await compileWithWebpack(webpackConfig, fs)
+	} else {
+		console.log('skipping compilation')
 	}
 
 	const outputFiles: Array<string> = fs.readdirSync(webpackConfig.output!.path!)

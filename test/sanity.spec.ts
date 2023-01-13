@@ -49,7 +49,7 @@ test('node', async () => {
         console.log(hello, 'other')
     `
 
-	const { modules, loadFile } = await runPlugin(
+	const { modules, loadFileSync } = await runPlugin(
 		{
 			'index.js': index,
 			'chunky.js': chunky,
@@ -59,12 +59,7 @@ test('node', async () => {
 
 	try {
 		// @ts-ignore: temp until a proper require analog is written
-		const fakeGlobal = nodeScopeFactory((path) => {
-			return {
-				modules: [],
-				ids: [path],
-			}
-		})
+		const fakeGlobal = nodeScopeFactory(loadFileSync, modules['index.js'].fullFilePath)
 		const moduleExports = await modules['index.js'].load({ fakeGlobal })
 		console.log(moduleExports)
 	} catch (e) {

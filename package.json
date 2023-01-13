@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack",
     "start": "node amdLoader.js",
-    "test": "MEMORY_FS=true COMPILE=true jest",
+    "test": "jest",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "prettier": "npx prettier --check .",
