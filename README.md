@@ -22,7 +22,7 @@ Your configuration file should end up looking something like this:
 
 ```javascript
 const { ProvidePlugin } = require('webpack')
-const ScopedAmdLibraryPlugin = require('scoped-amd-library-plugin')
+const { ScopedAmdLibraryPlugin } = require('scoped-amd-library-plugin')
 
 const scopeDependencyName = 'myScope'
 

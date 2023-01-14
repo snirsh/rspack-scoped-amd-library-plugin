@@ -15,7 +15,7 @@ dist
 gen
 
 target
-tsconfig.tsbuildinfo
+*.tsbuildinfo
 test/testkit/.dump
 coverage
 *perfer-report*

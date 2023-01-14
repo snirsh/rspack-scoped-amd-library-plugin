@@ -62,7 +62,7 @@ export type ScopedAmdLibraryPluginOptions = {
 	requireAsWrapper?: boolean
 }
 
-class ScopedAmdLibraryPlugin extends AbstractLibraryPlugin {
+export class ScopedAmdLibraryPlugin extends AbstractLibraryPlugin {
 	constructor(options: ScopedAmdLibraryPluginOptions) {
 		super({
 			pluginName: PLUGIN_NAME,
@@ -207,5 +207,3 @@ class ScopedAmdLibraryPlugin extends AbstractLibraryPlugin {
 		}
 	}
 }
-
-export default ScopedAmdLibraryPlugin

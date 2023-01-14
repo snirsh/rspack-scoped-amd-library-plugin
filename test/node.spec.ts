@@ -1,7 +1,7 @@
 import { compile, createWebpackConfig } from './testkit'
-import { nodeScopeFactory } from '../src/globalFactories/nodeScopeFactory'
+import { nodeScopeFactory } from '../src/globalFactories'
 import { ProvidePlugin } from 'webpack'
-import ScopedAmdLibraryPlugin from '../src/ScopedAmdLibraryPlugin'
+import { ScopedAmdLibraryPlugin } from '../src'
 
 const originalRequireFn = require
 

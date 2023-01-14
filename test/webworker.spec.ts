@@ -1,7 +1,7 @@
 import { compile, createWebpackConfig } from './testkit'
-import { webworkerScopeFactory } from '../src/globalFactories/webworkerScopeFactory'
+import { webworkerScopeFactory } from '../src/globalFactories'
 import { ProvidePlugin } from 'webpack'
-import ScopedAmdLibraryPlugin from '../src/ScopedAmdLibraryPlugin'
+import { ScopedAmdLibraryPlugin } from '../src'
 
 declare global {
 	function importScripts(): any
