@@ -1,5 +1,5 @@
-import { LoadFileSync } from '../types'
-import path from 'path'
+import type { LoadFileSync } from '../types'
+import { joinPath, dirname } from './pathUtils'
 
 /**
  * Generates the minimal required object for proper node targeted amd scripts built in webpack
@@ -13,8 +13,8 @@ export const nodeScopeFactory = (projectRoot: string, loadFileSync: LoadFileSync
 	}
 
 	const requireFn = (src: string) => {
-		const modulePath = path.join(projectRoot, src)
-		const moduleDir = path.dirname(modulePath)
+		const modulePath = joinPath(projectRoot, src)
+		const moduleDir = dirname(modulePath)
 		const moduleCode = loadFileSync(modulePath)
 
 		const packagedModule = eval(

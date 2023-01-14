@@ -1,4 +1,4 @@
-import { LoadFileSync } from '../types'
+import type { LoadFileSync } from '../types'
 
 /**
  * Generates the minimal required object for proper webworker targeted amd scripts built in webpack
