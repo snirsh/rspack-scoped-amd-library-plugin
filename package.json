@@ -32,7 +32,7 @@
   "author": "LiranCR",
   "license": "ISC",
   "peerDependencies": {
-    "@types/webpack": "5.x"
+    "webpack": "5.x"
   },
   "devDependencies": {
     "@types/jest": "^27.0.2",
