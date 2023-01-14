@@ -31,6 +31,9 @@
   },
   "author": "LiranCR",
   "license": "ISC",
+  "peerDependencies": {
+    "@types/webpack": "5.x"
+  },
   "devDependencies": {
     "@types/jest": "^27.0.2",
     "@types/lodash": "^4.14.191",
