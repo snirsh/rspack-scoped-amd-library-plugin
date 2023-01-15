@@ -3,7 +3,7 @@
 
 # Scoped AMD Library Webpack Plugin
 
-This plugin is based on the [AmdLibraryPlugin](https://github.com/webpack/webpack/blob/main/lib/library/AmdLibraryPlugin.js)
+This plugin is based on Webpack's [AmdLibraryPlugin](https://github.com/webpack/webpack/blob/main/lib/library/AmdLibraryPlugin.js)
 
 This plugin let you shadow your environment globals from Webpack's own runtime and provide your own global scope implementation instead.
 This may come in handy in case where you either wanna to load multiple pieces of code written by a **trusted** party without having them
