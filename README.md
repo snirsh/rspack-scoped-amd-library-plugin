@@ -5,9 +5,9 @@
 
 This plugin is based on Webpack's [AmdLibraryPlugin](https://github.com/webpack/webpack/blob/main/lib/library/AmdLibraryPlugin.js)
 
-This plugin let you shadow your environment globals from Webpack's own runtime and provide your own global scope implementation instead.
-This may come in handy in case where you either wanna to load multiple pieces of code written by a **trusted** party without having them
-affecting your global scope.
+This plugin let you create amd bundles that do not use your environment globals from Webpack's own runtime and use your own global scope implementation instead.
+This may come in handy in cases where you wish to load multiple pieces of code written by a **trusted** party without having them
+polluting your global scope. As a library owner who use this plugin your output will be expecting your consumer to provide you with a global analog.
 
 Additionally, you may use this plugin to provide an easy way for your library consumer to load it in a different
 environment than it was originally packaged for (e.g. consume amd bundles built for node targets in the browser) without bloating your bundle with
@@ -98,6 +98,43 @@ in reality this "counter measure" can easily be worked around by malicious code 
 ```
 
 This plugin was never designed for code sand-boxing. it's simply a way to separate dynamically imported bundles and their chunks into different scopes.
+
+## Providing an escape hatch
+
+Sometimes you have no choice but to access the real global scope (such a case might be poly-filling general class constructors), while you can try and hack
+your way into accessing the global scope it's better to declare this access as a contact, accessing a predefined global namespace your consumer will connect
+to the real global object.
+
+**lib/webpack.config.js**
+```javascript
+module.exports = {
+    //...
+	plugins: [
+        //...
+		new ProvidePlugin({
+            // wire global namespace use __global_escape_hatch__ from application code into the global dependency
+			__global_escape_hatch__: [scopeDependencyName, __global_escape_hatch__]
+		}),
+	],
+}
+```
+
+**lib.js**
+```javascript
+// access global namespace from application code
+const location = __global_escape_hatch__.location
+// do somthing with location now retreived form the real global object of the consumer
+```
+
+**consumer.js**
+```javascript
+// provide a global scope analog with the expected property refering to the real global scope
+const scope = {
+    __global_escape_hatch__: globalThis,
+}
+
+AMDLoader.load('lib.js', scope)
+```
 
 ## Caveats
 
