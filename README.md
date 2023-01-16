@@ -106,20 +106,22 @@ your way into accessing the global scope it's better to declare this access as a
 to the real global object.
 
 **lib/webpack.config.js**
+
 ```javascript
 module.exports = {
-    //...
+	//...
 	plugins: [
-        //...
+		//...
 		new ProvidePlugin({
-            // wire global namespace use __global_escape_hatch__ from application code into the global dependency
-			__global_escape_hatch__: [scopeDependencyName, __global_escape_hatch__]
+			// wire global namespace use __global_escape_hatch__ from application code into the global dependency
+			__global_escape_hatch__: [scopeDependencyName, __global_escape_hatch__],
 		}),
 	],
 }
 ```
 
 **lib.js**
+
 ```javascript
 // access global namespace from application code
 const location = __global_escape_hatch__.location
@@ -127,10 +129,11 @@ const location = __global_escape_hatch__.location
 ```
 
 **consumer.js**
+
 ```javascript
 // provide a global scope analog with the expected property refering to the real global scope
 const scope = {
-    __global_escape_hatch__: globalThis,
+	__global_escape_hatch__: globalThis,
 }
 
 AMDLoader.load('lib.js', scope)
