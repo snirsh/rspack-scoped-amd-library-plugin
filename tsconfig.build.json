@@ -3,6 +3,7 @@
 	"include": ["src"],
 	"compilerOptions": {
 		"rootDir": "src",
-		"declaration": true
+		"declaration": true,
+		"importHelpers": false
 	}
 }

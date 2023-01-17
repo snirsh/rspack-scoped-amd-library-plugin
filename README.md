@@ -68,6 +68,62 @@ module.exports = {
 }
 ```
 
+### output example
+
+Assuming our code include these source files
+
+**index.js**
+
+```javascript
+const chunk = import('./chunky' /* webpackChunkName: "chunky" */)
+export const indexPromise = fetch('http://localhost:8080')
+export const chunkyPromise = chunk
+```
+
+**chunky.js**
+
+```javascript
+export const msg = 'msg from chunk'
+export const chunkyPromise = fetch('http://localhost:8080/chunky')
+```
+
+Using the configuration above, webpack will output something like this:
+
+**index.bundle.js**
+
+```javascript
+define(['myScope'], (__WEBPACK_EXTERNAL_MODULE__106__) => {
+	const globalThis = __WEBPACK_EXTERNAL_MODULE__106__
+	const window = __WEBPACK_EXTERNAL_MODULE__106__
+	const document = (__WEBPACK_EXTERNAL_MODULE__106__.document =
+		__WEBPACK_EXTERNAL_MODULE__106__.document || __WEBPACK_EXTERNAL_MODULE__106__)
+	return (() => {
+		var fetch = __webpack_require__(106)['fetch']
+		const chunk = __webpack_require__
+			.e(/* import() | chunky */ 427)
+			.then(__webpack_require__.bind(__webpack_require__, 198))(() => {
+			const indexPromise = fetch('http://localhost:8080')
+			const chunkyPromise = chunk
+		})()
+	})()
+})
+```
+
+**chunky.chunk.js**
+
+```javascript
+;(self['webpackChunkproject_name'] = self['webpackChunkproject_name'] || []).push([
+	[427],
+	{
+		198: (__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+			var fetch = __webpack_require__(106)['fetch']
+			const msg = 'msg from chunk'
+			const chunkyPromise = fetch('http://localhost:8080/chunky')
+		},
+	},
+])
+```
+
 ## Global factories
 
 In addition to the plugin itself, this library also comes packaged with global scope object factories which create the minimal global object implementation
