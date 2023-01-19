@@ -49,10 +49,10 @@ const createShadowVariablesString = (scopeArgumentName: string, target: string) 
 	}
 
 	return [
-		...globalPointers.map((pointer) => `const ${pointer}=${scopeArgumentName};`),
+		...globalPointers.map((pointer) => `var ${pointer}=${scopeArgumentName};`),
 		...globalNamespaces.map(
 			(namespace) =>
-				`const ${namespace}=(${scopeArgumentName}.${namespace}=${scopeArgumentName}.${namespace}||${scopeArgumentName});`
+				`var ${namespace}=(${scopeArgumentName}.${namespace}=${scopeArgumentName}.${namespace}||${scopeArgumentName});`
 		),
 	].join('')
 }
