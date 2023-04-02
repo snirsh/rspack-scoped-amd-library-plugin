@@ -7,7 +7,7 @@ This plugin is based on Webpack's [AmdLibraryPlugin](https://github.com/webpack/
 
 This plugin let you create amd bundles that do not use your environment globals from Webpack's own runtime and use your own global scope implementation instead.
 This may come in handy in cases where you wish to load multiple pieces of code written by a **trusted** party without having them
-polluting your global scope. As a library owner who use this plugin your output will be expecting your consumer to provide you with a global analog.
+polluting your global scope. As a library owner who use this plugin, your output will be expecting your consumer to provide you with a global analog.
 
 Additionally, you may use this plugin to provide an easy way for your library consumer to load it in a different
 environment than it was originally packaged for (e.g. consume amd bundles built for node targets in the browser) without bloating your bundle with
@@ -92,12 +92,15 @@ Using the configuration above, webpack will output something like this:
 **index.bundle.js**
 
 ```javascript
+// myScope declared as external so it's expected as one of the amd's dependencies
 define(['myScope'], (__WEBPACK_EXTERNAL_MODULE__106__) => {
+	// ScopedAmdLibraryPlugin adds global objects shadow vars (default build target is web)
 	const globalThis = __WEBPACK_EXTERNAL_MODULE__106__
 	const window = __WEBPACK_EXTERNAL_MODULE__106__
 	const document = (__WEBPACK_EXTERNAL_MODULE__106__.document =
 		__WEBPACK_EXTERNAL_MODULE__106__.document || __WEBPACK_EXTERNAL_MODULE__106__)
 	return (() => {
+		// ProvidePlugin replaces global fetch access with myScope.fetch which is from our dependencies
 		var fetch = __webpack_require__(106)['fetch']
 		const chunk = __webpack_require__
 			.e(/* import() | chunky */ 427)
@@ -116,6 +119,7 @@ define(['myScope'], (__WEBPACK_EXTERNAL_MODULE__106__) => {
 	[427],
 	{
 		198: (__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+			// ProvidePlugin replaces global fetch access with myScope.fetch which is from our dependencies
 			var fetch = __webpack_require__(106)['fetch']
 			const msg = 'msg from chunk'
 			const chunkyPromise = fetch('http://localhost:8080/chunky')
