@@ -6,7 +6,7 @@ import { skipCompilation, useInMemoryFileSystem } from './constants'
 import { runWebpack } from './runWebpack'
 import { FilesContent } from './types'
 import { prepareFileSystem } from './prepareFileSystem'
-import type { Configuration } from 'webpack'
+import type { BundlerConfiguration } from './bundlerFactory'
 
 type ModuleInfo = {
 	load: (dependencies?: any) => Promise<any>
@@ -21,27 +21,26 @@ type RunPluginResult = {
 	loadFileSync: LoadFileSync
 }
 
-export const compile = async (files: FilesContent, webpackConfig: Configuration): Promise<RunPluginResult> => {
+export const compile = async (files: FilesContent, config: BundlerConfiguration): Promise<RunPluginResult> => {
 	if (!('index.js' in files)) {
-		throw new Error('"index.js" file must be provided')
+		throw new Error('index.js file is required.')
 	}
 
 	const fs = prepareFileSystem(files)
-
 	const { loadFile, loadFileSync } = loadFileFactory(fs)
 	const amdLoader = AmdLoaderFactory(loadFile)
 
 	if (useInMemoryFileSystem || !skipCompilation) {
 		console.log('Compiling source code')
-		await runWebpack(webpackConfig, fs)
+		await runWebpack(config, fs)
 	} else {
 		console.log('skipping compilation')
 	}
 
-	const outputFiles: Array<string> = fs.readdirSync(webpackConfig.output!.path!)
+	const outputFiles: Array<string> = fs.readdirSync(config.output!.path!)
 
 	const modules = outputFiles.reduce<ModuleLoaders>((loaders, filePath) => {
-		const fullFilePath = `${webpackConfig.output!.path}/${filePath}`
+		const fullFilePath = `${config.output!.path}/${filePath}`
 		const load = (dependencies = {}) => amdLoader.loadModule(fullFilePath, dependencies)
 		const code = fs.readFileSync(fullFilePath, 'utf-8')
 

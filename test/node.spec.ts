@@ -1,7 +1,6 @@
 import { compile, createWebpackConfig } from './testkit'
 import { nodeScopeFactory } from '../src/globalFactories'
-import { ProvidePlugin } from 'webpack'
-import { ScopedAmdLibraryPlugin } from '../src'
+import { getBundlerPlugins } from './testkit/bundlerFactory'
 
 const originalRequireFn = require
 
@@ -23,6 +22,8 @@ describe('node', () => {
 	})
 
 	test('Load module chunks', async () => {
+		const { ScopedAmdLibraryPlugin } = getBundlerPlugins()
+
 		const files = {
 			['index.js']:
 				// language=JavaScript
@@ -61,6 +62,8 @@ describe('node', () => {
 	})
 
 	test('Prevent access to host global scope from webpack runtime code', async () => {
+		const { ScopedAmdLibraryPlugin } = getBundlerPlugins()
+
 		const files = {
 			['index.js']:
 				// language=JavaScript
@@ -104,6 +107,8 @@ describe('node', () => {
 	})
 
 	test('Replace application code global scope access with the provided scope', async () => {
+		const { ProvidePlugin, ScopedAmdLibraryPlugin } = getBundlerPlugins()
+
 		const files = {
 			['index.js']:
 				// language=JavaScript
@@ -113,7 +118,7 @@ describe('node', () => {
 			['chunky.js']:
 				// language=JavaScript
 				`export const msg = 'msg from chunk'
-				 export const chunkBase64 = atob('chunk')`,
+				export const chunkBase64 = atob('chunk')`,
 		}
 
 		const scopeDependencyName = 'myScope'

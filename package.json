@@ -13,6 +13,7 @@
   ],
   "keywords": [
     "webpack",
+    "rspack",
     "amd",
     "scoped"
   ],
@@ -21,6 +22,8 @@
     "build": "tsc -p ./tsconfig.build.json",
     "start": "node amdLoader.js",
     "test": "jest",
+    "test:webpack": "BUNDLER=webpack jest",
+    "test:rspack": "BUNDLER=rspack jest",
     "lint": "eslint . --ext .ts --max-warnings 0",
     "lint:fix": "eslint . --ext .ts --fix",
     "prettier": "npx prettier --check .",
@@ -32,13 +35,15 @@
   "author": "LiranCR",
   "license": "ISC",
   "peerDependencies": {
-    "webpack": "5.x"
+    "webpack": "5.x",
+    "@rspack/core": ">=0.7.0"
   },
   "devDependencies": {
+    "@rspack/core": "^1.0.0",
     "@types/jest": "^27.0.2",
     "@types/lodash": "^4.14.191",
     "@types/memory-fs": "^0.3.3",
-    "@types/node": "^18.11.7",
+    "@types/node": "^22.0.0",
     "@types/webpack": "^5.28.0",
     "@types/webpack-sources": "^3.2.0",
     "@typescript-eslint/eslint-plugin": "^5.48.1",

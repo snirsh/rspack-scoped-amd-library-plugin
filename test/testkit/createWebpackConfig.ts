@@ -1,26 +1,30 @@
 import type { Configuration } from 'webpack'
+import type { RspackOptions } from '@rspack/core'
 import _ from 'lodash'
 import { filePrefix } from './constants'
+import path from 'path'
 
-type CreateConfigParams = Pick<Configuration, 'target' | 'plugins' | 'externals'> & {
+type BundlerConfiguration = Configuration | RspackOptions
+
+type CreateConfigParams = Pick<BundlerConfiguration, 'target' | 'plugins' | 'externals'> & {
 	additionalEntryFiles?: Array<string>
 }
 
-export const createWebpackConfig = ({
-	target,
-	plugins,
-	externals,
-	additionalEntryFiles,
-}: CreateConfigParams): Configuration => {
+export const createWebpackConfig = ({ target, plugins, externals, additionalEntryFiles }: CreateConfigParams): any => {
+	// Create relative paths for rspack compatibility
+	const createEntryPath = (filename: string) => {
+		return path.resolve(filePrefix, filename)
+	}
+
 	return {
 		cache: false,
 		mode: 'production',
 		entry: {
 			..._(additionalEntryFiles || [])
 				.keyBy((file) => file.split('.js')[0])
-				.mapValues((v) => `${filePrefix}/${v}`)
+				.mapValues((v) => createEntryPath(v))
 				.value(),
-			index: `${filePrefix}/index.js`,
+			index: createEntryPath('index.js'),
 		},
 		target,
 		output: {

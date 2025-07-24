@@ -1,7 +1,6 @@
 import { compile, createWebpackConfig } from './testkit'
 import { webworkerScopeFactory } from '../src/globalFactories'
-import { ProvidePlugin } from 'webpack'
-import { ScopedAmdLibraryPlugin } from '../src'
+import { getBundlerPlugins } from './testkit/bundlerFactory'
 
 declare global {
 	function importScripts(): any
@@ -36,6 +35,8 @@ describe('webworker', () => {
 	})
 
 	test('Load module chunks', async () => {
+		const { ScopedAmdLibraryPlugin } = getBundlerPlugins()
+
 		const files = {
 			['index.js']:
 				// language=JavaScript
@@ -74,6 +75,8 @@ describe('webworker', () => {
 	})
 
 	test('Prevent access to host global scope from webpack runtime code', async () => {
+		const { ScopedAmdLibraryPlugin } = getBundlerPlugins()
+
 		const files = {
 			['index.js']:
 				// language=JavaScript
@@ -117,6 +120,8 @@ describe('webworker', () => {
 	})
 
 	test('Replace application code global scope access with the provided scope', async () => {
+		const { ProvidePlugin, ScopedAmdLibraryPlugin } = getBundlerPlugins()
+
 		const files = {
 			['index.js']:
 				// language=JavaScript
@@ -126,7 +131,7 @@ describe('webworker', () => {
 			['chunky.js']:
 				// language=JavaScript
 				`export const msg = 'msg from chunk'
-				 export const chunkBase64 = atob('chunk')`,
+				export const chunkBase64 = atob('chunk')`,
 		}
 
 		const scopeDependencyName = 'myScope'
