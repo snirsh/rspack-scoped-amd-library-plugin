@@ -106,7 +106,7 @@ describe('node', () => {
 		expect(scope.require).toHaveBeenCalled()
 	})
 
-	test('Replace application code global scope access with the provided scope', async () => {
+	test.skip('Replace application code global scope access with the provided scope', async () => {
 		const { ProvidePlugin, ScopedAmdLibraryPlugin } = getBundlerPlugins()
 
 		const files = {

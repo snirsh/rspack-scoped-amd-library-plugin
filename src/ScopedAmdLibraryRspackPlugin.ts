@@ -73,8 +73,14 @@ export class ScopedAmdLibraryRspackPlugin implements RspackPluginInstance {
 			}
 		}
 
-		if (typeof compiler.options.output.library === 'object' && !compiler.options.output.library.type) {
-			compiler.options.output.library.type = 'amd'
+		if (typeof compiler.options.output.library === 'object') {
+			// Handle both 'amd' and 'scoped-amd' types by converting to 'amd'
+			if (!compiler.options.output.library.type) {
+				compiler.options.output.library.type = 'amd'
+			} else if (compiler.options.output.library.type === 'scoped-amd') {
+				// Convert scoped-amd to amd for processing
+				compiler.options.output.library.type = 'amd'
+			}
 		}
 
 		// Hook into the compilation process
