@@ -12,11 +12,10 @@
     "dist/**/*"
   ],
   "keywords": [
-    "rspack",
+    "webpack",
     "amd",
     "scoped",
-    "library",
-    "plugin"
+    "rspack"
   ],
   "scripts": {
     "prepare": "husky install",
