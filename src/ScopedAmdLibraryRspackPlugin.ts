@@ -1,63 +1,19 @@
 import { ConcatSource } from 'webpack-sources'
 import type { RspackPluginInstance, Compiler as RspackCompiler } from '@rspack/core'
 
+import { getTarget, createShadowVariablesString, validateOptions } from './commons'
+
+import type { ScopedAmdLibraryPluginOptions } from './types'
+
 const PLUGIN_NAME = 'ScopedAmdLibraryRspackPlugin'
-
-const getTarget = (compilation: any): string => {
-	if (compilation.options.target) {
-		const target = Array.isArray(compilation.options.target)
-			? compilation.options.target[0]
-			: compilation.options.target
-		return target.includes('node') ? 'node' : target
-	}
-	return 'web'
-}
-
-const createShadowVariablesString = (scopeArgumentName: string, target: string) => {
-	let globalPointers: Array<string> = []
-	let globalNamespaces: Array<string> = []
-
-	switch (target) {
-		case 'web':
-			globalPointers = ['globalThis', 'window']
-			globalNamespaces = ['document']
-			break
-		case 'webworker':
-			globalPointers = ['globalThis']
-			globalNamespaces = ['importScripts', 'location']
-			break
-		case 'node':
-			globalNamespaces = ['require']
-			break
-		default:
-			throw new Error(`target ${target} not supported by ${PLUGIN_NAME}`)
-	}
-
-	return [
-		...globalPointers.map((pointer) => `var ${pointer}=${scopeArgumentName};`),
-		...globalNamespaces.map(
-			(namespace) =>
-				`var ${namespace}=(${scopeArgumentName}.${namespace}=${scopeArgumentName}.${namespace}||${scopeArgumentName});`
-		),
-	].join('')
-}
-
-export type ScopedAmdLibraryRspackPluginOptions = {
-	scopeDependencyName: string
-	requireAsWrapper?: boolean
-}
 
 export class ScopedAmdLibraryRspackPlugin implements RspackPluginInstance {
 	name = PLUGIN_NAME
 	private scopeDependencyName: string
 	private requireAsWrapper: boolean
 
-	constructor(options: ScopedAmdLibraryRspackPluginOptions) {
-		if (!options?.scopeDependencyName) {
-			throw new Error(
-				`${PLUGIN_NAME} constructor was called without an option argument with scopeDependencyName property`
-			)
-		}
+	constructor(options: ScopedAmdLibraryPluginOptions) {
+		validateOptions(options, PLUGIN_NAME)
 
 		this.scopeDependencyName = options.scopeDependencyName
 		this.requireAsWrapper = !!options.requireAsWrapper
