@@ -1,3 +1,5 @@
+import type { ScopedAmdLibraryPluginOptions } from './types'
+
 export const LIBRARY_TYPE = 'scoped-amd'
 
 export const getTarget = (compilation: any): string => {
