@@ -14,53 +14,11 @@ import type { RenderContext } from 'webpack/lib/javascript/JavascriptModulesPlug
 import type { Hash } from 'webpack/lib/util/Hash'
 import type { Chunk } from 'webpack/lib/library/Chunk'
 
+import { LIBRARY_TYPE, getTarget, createShadowVariablesString, validateOptions } from './commons'
+
+import type { ScopedAmdLibraryPluginOptions } from './types'
+
 const PLUGIN_NAME = 'ScopedAmdLibraryPlugin'
-const LIBRARY_TYPE = 'scoped-amd'
-
-const getTarget = (compilation: Compilation): string => {
-	if (compilation.options.target) {
-		const target = Array.isArray(compilation.options.target)
-			? compilation.options.target[0]
-			: compilation.options.target
-		return target.includes('node') ? 'node' : target
-	}
-
-	return compilation.options.loader?.target || 'web'
-}
-
-const createShadowVariablesString = (scopeArgumentName: string, target: string) => {
-	let globalPointers: Array<string> = []
-	let globalNamespaces: Array<string> = []
-
-	switch (target) {
-		case 'web':
-			globalPointers = ['globalThis', 'window']
-			globalNamespaces = ['document']
-			break
-		case 'webworker':
-			globalPointers = ['globalThis']
-			globalNamespaces = ['importScripts', 'location']
-			break
-		case 'node':
-			globalNamespaces = ['require']
-			break
-		default:
-			throw new Error(`target ${target} not suppoerted by ${PLUGIN_NAME}`)
-	}
-
-	return [
-		...globalPointers.map((pointer) => `var ${pointer}=${scopeArgumentName};`),
-		...globalNamespaces.map(
-			(namespace) =>
-				`var ${namespace}=(${scopeArgumentName}.${namespace}=${scopeArgumentName}.${namespace}||${scopeArgumentName});`
-		),
-	].join('')
-}
-
-export type ScopedAmdLibraryPluginOptions = {
-	scopeDependencyName: string
-	requireAsWrapper?: boolean
-}
 
 export class ScopedAmdLibraryPlugin extends AbstractLibraryPlugin {
 	constructor(options: ScopedAmdLibraryPluginOptions) {
@@ -69,11 +27,7 @@ export class ScopedAmdLibraryPlugin extends AbstractLibraryPlugin {
 			type: LIBRARY_TYPE,
 		})
 
-		if (!options?.scopeDependencyName) {
-			throw new Error(
-				`${PLUGIN_NAME} constructor was called without an option argument with scopeDependencyName property`
-			)
-		}
+		validateOptions(options, PLUGIN_NAME)
 
 		this.scopeDependencyName = options.scopeDependencyName
 		this.requireAsWrapper = !!options.requireAsWrapper
