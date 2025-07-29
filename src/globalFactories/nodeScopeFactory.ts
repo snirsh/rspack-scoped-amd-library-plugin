@@ -13,41 +13,7 @@ export const nodeScopeFactory = (projectRoot: string, loadFileSync: LoadFileSync
 		throw new Error('non-url projectRoot argument must end with a "/"')
 	}
 
-	// Preserve the original require function for webpack chunk loading
-	const originalRequire = require
-
 	const requireFn = (src: string) => {
-		// If it's a webpack chunk (relative path starting with ./), use original require
-		if (typeof src === 'string' && src.startsWith('./')) {
-			// For now, let's try to load chunks using the loadFileSync mechanism
-			// but keep the original logic structure
-			try {
-				const modulePath = joinPath(projectRoot, src)
-				const moduleCode = loadFileSync(modulePath)
-
-				// Try to evaluate as CommonJS module
-				const module = { exports: {} as any }
-				const moduleRequire = (id: any) => {
-					// This is a simplified approach - in practice, webpack chunks
-					// need a more complex runtime, but this might work for basic cases
-					return originalRequire(id)
-				}
-
-				const moduleFunction = eval(`(function(exports, require, module, __filename, __dirname) {
-					${moduleCode}
-				})`)
-
-				moduleFunction(module.exports, moduleRequire, module, modulePath, src)
-				return module.exports
-			} catch (error) {
-				// If that fails, fall back to original approach
-				const basePath = projectRoot.replace(/\/$/, '')
-				const absolutePath = path.resolve(basePath, src)
-				return originalRequire(absolutePath)
-			}
-		}
-
-		// Otherwise use the original scoped require logic
 		const modulePath = joinPath(projectRoot, src)
 		const moduleDir = dirname(modulePath)
 		const moduleCode = loadFileSync(modulePath)
