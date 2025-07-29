@@ -8,7 +8,7 @@ import RequireChunkLoadingRuntimeModule from 'webpack/lib/node/RequireChunkLoadi
 import ImportScriptsChunkLoadingRuntimeModule from 'webpack/lib/webworker/ImportScriptsChunkLoadingRuntimeModule'
 import ExportPropertyTemplatePlugin from 'webpack/lib/library/ExportPropertyLibraryPlugin'
 
-import type { LibraryOptions, Compiler, Compilation } from 'webpack'
+import type { LibraryOptions, Compiler } from 'webpack'
 import type { Source } from 'webpack-sources'
 import type { RenderContext } from 'webpack/lib/javascript/JavascriptModulesPlugin'
 import type { Hash } from 'webpack/lib/util/Hash'
