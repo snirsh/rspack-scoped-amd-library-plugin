@@ -1,8 +1,10 @@
 import type { ScopedAmdLibraryPluginOptions } from './types'
+import type { Compilation } from 'webpack'
+import type { Compiler as RspackCompiler } from '@rspack/core'
 
 export const LIBRARY_TYPE = 'scoped-amd'
 
-export const getTarget = (compilation: any): string => {
+export const getTarget = (compilation: Compilation | RspackCompiler): string => {
 	if (compilation.options.target) {
 		const target = Array.isArray(compilation.options.target)
 			? compilation.options.target[0]
