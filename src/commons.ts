@@ -35,12 +35,40 @@ export const createShadowVariablesString = (scopeArgumentName: string, target: s
 			throw new Error(`target ${target} not supported by ScopedAmdLibraryPlugin`)
 	}
 
+	// Don't create webpack runtime shadows for now since we're not replacing the calls
+	const webpackRuntimeShadows: string[] = [
+		// Removed webpack runtime shadowing temporarily
+	]
+
+	// Target-specific webpack runtime overrides
+	const targetSpecificShadows: string[] = []
+	switch (target) {
+		case 'web':
+			targetSpecificShadows.push(
+				`var __scoped_createElement = function(tag) { return ${scopeArgumentName}.document.createElement(tag); };`,
+				`var __scoped_head_appendChild = function(element) { return ${scopeArgumentName}.document.head.appendChild(element); };`
+			)
+			break
+		case 'webworker':
+			targetSpecificShadows.push(
+				`var __scoped_importScripts = function() { return ${scopeArgumentName}.importScripts.apply(${scopeArgumentName}, arguments); };`
+			)
+			break
+		case 'node':
+			targetSpecificShadows.push(
+				`var __scoped_require = function(id) { return ${scopeArgumentName}.require(id); };`
+			)
+			break
+	}
+
 	return [
 		...globalPointers.map((pointer) => `var ${pointer}=${scopeArgumentName};`),
 		...globalNamespaces.map(
 			(namespace) =>
 				`var ${namespace}=(${scopeArgumentName}.${namespace}=${scopeArgumentName}.${namespace}||${scopeArgumentName});`
 		),
+		...webpackRuntimeShadows,
+		...targetSpecificShadows,
 	].join('')
 }
 

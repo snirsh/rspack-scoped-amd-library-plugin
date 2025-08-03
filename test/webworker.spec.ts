@@ -38,13 +38,11 @@ describe('webworker', () => {
 		const { ScopedAmdLibraryPlugin } = getBundlerPlugins()
 
 		const files = {
-			['index.js']:
-				// language=JavaScript
-				`const chunk = import('./chunky' /* webpackChunkName: "chunky" */)
-				export const chunkyPromise = chunk`,
-			['chunky.js']:
-				// language=JavaScript
-				`export const msg = 'msg from chunk'`,
+			['index.js']: `
+			const chunk = import('./chunky' /* webpackChunkName: "chunky" */);
+			export const chunkyPromise = chunk;
+		`,
+			['chunky.js']: `export const msg = 'msg from chunk'`,
 		}
 
 		const scopeDependencyName = 'myScope'
