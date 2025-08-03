@@ -381,25 +381,33 @@ export const chunkBase64 = atob('chunk')`
 	}
 
 	private setupModuleInterception(normalModuleFactory: any): void {
-		normalModuleFactory.hooks.createModule.tap(PLUGIN_NAME, (createData: any) => {
-			if (createData.resource && createData.resource.endsWith('.js')) {
-				const resourcePath = createData.resource
-				if (this.originalSources.has(path.basename(resourcePath))) {
-					const originalContent = this.originalSources.get(path.basename(resourcePath))!
-					this.sourceFiles.set(resourcePath, originalContent)
-				}
-			}
-		})
+		if (!normalModuleFactory || !normalModuleFactory.hooks) {
+			return
+		}
 
-		normalModuleFactory.hooks.module.tap(PLUGIN_NAME, (module: Module, createData: any) => {
-			if (createData.resource && createData.resource.endsWith('.js')) {
-				const resourcePath = createData.resource
-				const baseName = path.basename(resourcePath)
-				if (this.originalSources.has(baseName)) {
-					this.moduleSourceMap.set(module, this.originalSources.get(baseName)!)
+		if (normalModuleFactory.hooks.createModule && normalModuleFactory.hooks.createModule.tap) {
+			normalModuleFactory.hooks.createModule.tap(PLUGIN_NAME, (createData: any) => {
+				if (createData.resource && createData.resource.endsWith('.js')) {
+					const resourcePath = createData.resource
+					if (this.originalSources.has(path.basename(resourcePath))) {
+						const originalContent = this.originalSources.get(path.basename(resourcePath))!
+						this.sourceFiles.set(resourcePath, originalContent)
+					}
 				}
-			}
-		})
+			})
+		}
+
+		if (normalModuleFactory.hooks.module && normalModuleFactory.hooks.module.tap) {
+			normalModuleFactory.hooks.module.tap(PLUGIN_NAME, (module: Module, createData: any) => {
+				if (createData.resource && createData.resource.endsWith('.js')) {
+					const resourcePath = createData.resource
+					const baseName = path.basename(resourcePath)
+					if (this.originalSources.has(baseName)) {
+						this.moduleSourceMap.set(module, this.originalSources.get(baseName)!)
+					}
+				}
+			})
+		}
 	}
 
 	private setupExternalModuleCollection(compiler: RspackCompiler): void {
@@ -422,19 +430,27 @@ export const chunkBase64 = atob('chunk')`
 	private analyzeDependencyGraph(compilation: any, modules: Iterable<Module>): void {
 		const moduleGraph = compilation.moduleGraph
 
+		if (!moduleGraph || typeof moduleGraph.getOutgoingConnections !== 'function') {
+			return
+		}
+
 		for (const module of modules) {
-			if (!this.isExternalModule(module) && moduleGraph) {
-				const connections = moduleGraph.getOutgoingConnections(module)
-				if (connections) {
-					connections.forEach((connection: any) => {
-						if (connection.dependency && connection.dependency.type === 'esm import') {
-							const request = connection.dependency.request
-							if (request && this.moduleSourceMap.has(module)) {
-								const originalSource = this.moduleSourceMap.get(module)!
-								this.sourceFiles.set(request, originalSource)
+			if (!this.isExternalModule(module)) {
+				try {
+					const connections = moduleGraph.getOutgoingConnections(module)
+					if (connections) {
+						connections.forEach((connection: any) => {
+							if (connection.dependency && connection.dependency.type === 'esm import') {
+								const request = connection.dependency.request
+								if (request && this.moduleSourceMap.has(module)) {
+									const originalSource = this.moduleSourceMap.get(module)!
+									this.sourceFiles.set(request, originalSource)
+								}
 							}
-						}
-					})
+						})
+					}
+				} catch (error) {
+					// Silently ignore module graph API differences
 				}
 			}
 		}
@@ -528,14 +544,16 @@ export const chunkBase64 = atob('chunk')`
 	}
 
 	private preventDoubleAMDWrapping(compilation: any): void {
-		if (compilation.hooks.beforeModuleAssets) {
+		if (compilation.hooks && compilation.hooks.beforeModuleAssets && compilation.hooks.beforeModuleAssets.tap) {
 			compilation.hooks.beforeModuleAssets.tap(PLUGIN_NAME, () => {
 				if (compilation.options.output?.library?.type === 'amd') {
 					const originalLibraryType = compilation.options.output.library.type
 					compilation.options.output.library.type = 'var'
-					compilation.hooks.afterProcessAssets.tap(PLUGIN_NAME, () => {
-						compilation.options.output.library.type = originalLibraryType
-					})
+					if (compilation.hooks.afterProcessAssets && compilation.hooks.afterProcessAssets.tap) {
+						compilation.hooks.afterProcessAssets.tap(PLUGIN_NAME, () => {
+							compilation.options.output.library.type = originalLibraryType
+						})
+					}
 				}
 			})
 		}

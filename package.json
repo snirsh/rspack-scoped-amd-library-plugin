@@ -1,6 +1,6 @@
 {
   "name": "scoped-amd-library-plugin-rspack",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Rspack plugin for scoped AMD library support",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
